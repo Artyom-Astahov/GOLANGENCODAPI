@@ -18,11 +18,6 @@ type Book struct {
 	Email     string `json:"email"`
 }
 
-// type Author struct {
-//   Firstname string `json:"firstname"`
-//   Lastname  string `json:"lastname"`
-// }
-
 var books []Book
 
 func getBooks(w http.ResponseWriter, r *http.Request) {
