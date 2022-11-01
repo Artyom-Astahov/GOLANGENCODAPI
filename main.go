@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type Book struct {
+type Person struct {
 	ID        string `json:"id"`
 	Firstname string `json:"firstname"`
 	Lastname  string `json:"lastname"`
@@ -18,71 +18,71 @@ type Book struct {
 	Email     string `json:"email"`
 }
 
-var books []Book
+var persons []Person
 
-func getBooks(w http.ResponseWriter, r *http.Request) {
+func getPersons(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(books)
+	json.NewEncoder(w).Encode(persons)
 }
 
-func getBook(w http.ResponseWriter, r *http.Request) {
+func getPerson(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
-	for _, item := range books {
+	for _, item := range persons {
 		if item.ID == params["id"] {
 			json.NewEncoder(w).Encode(item)
 			return
 		}
 	}
-	json.NewEncoder(w).Encode(&Book{})
+	json.NewEncoder(w).Encode(&Person{})
 }
 
-func createBook(w http.ResponseWriter, r *http.Request) {
+func createPerson(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	var book Book
-	_ = json.NewDecoder(r.Body).Decode(&book)
-	book.ID = strconv.Itoa(rand.Intn(1000000))
-	books = append(books, book)
-	json.NewEncoder(w).Encode(book)
+	var person Person
+	_ = json.NewDecoder(r.Body).Decode(&person)
+	person.ID = strconv.Itoa(rand.Intn(1000000))
+	persons = append(persons, person)
+	json.NewEncoder(w).Encode(person)
 }
 
-func updateBook(w http.ResponseWriter, r *http.Request) {
+func updatePerson(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
-	for index, item := range books {
+	for index, item := range persons {
 		if item.ID == params["id"] {
-			books = append(books[:index], books[index+1:]...)
-			var book Book
-			_ = json.NewDecoder(r.Body).Decode(&book)
-			book.ID = params["id"]
-			books = append(books, book)
-			json.NewEncoder(w).Encode(book)
+			persons = append(persons[:index], persons[index+1:]...)
+			var person Person
+			_ = json.NewDecoder(r.Body).Decode(&person)
+			person.ID = params["id"]
+			persons = append(persons, person)
+			json.NewEncoder(w).Encode(person)
 			return
 		}
 	}
-	json.NewEncoder(w).Encode(books)
+	json.NewEncoder(w).Encode(persons)
 }
 
-func deleteBook(w http.ResponseWriter, r *http.Request) {
+func deletePerson(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
-	for index, item := range books {
+	for index, item := range persons {
 		if item.ID == params["id"] {
-			books = append(books[:index], books[index+1:]...)
+			persons = append(persons[:index], persons[index+1:]...)
 			break
 		}
 	}
-	json.NewEncoder(w).Encode(books)
+	json.NewEncoder(w).Encode(persons)
 }
 
 func main() {
 	r := mux.NewRouter()
-	books = append(books, Book{ID: "1", Firstname: "Артём", Lastname: "Астахов", Phone: 89156151929, Email: "astahov.artem.sh@gmail.com"})
-	books = append(books, Book{ID: "2", Firstname: "Иван", Lastname: "Иванов", Phone: 89966011826, Email: "skatchanel@gmail.com"})
-	r.HandleFunc("/books", getBooks).Methods("GET")
-	r.HandleFunc("/books/{id}", getBook).Methods("GET")
-	r.HandleFunc("/books", createBook).Methods("POST")
-	r.HandleFunc("/books/{id}", updateBook).Methods("PUT")
-	r.HandleFunc("/books/{id}", deleteBook).Methods("DELETE")
+	persons = append(persons, Person{ID: "1", Firstname: "Артём", Lastname: "Астахов", Phone: 89156151929, Email: "astahov.artem.sh@gmail.com"})
+	persons = append(persons, Person{ID: "2", Firstname: "Иван", Lastname: "Иванов", Phone: 89966011826, Email: "skatchanel@gmail.com"})
+	r.HandleFunc("/person", getPersons).Methods("GET")
+	r.HandleFunc("/person/{id}", getPerson).Methods("GET")
+	r.HandleFunc("/persons", createPerson).Methods("POST")
+	r.HandleFunc("/persons/{id}", updatePerson).Methods("PUT")
+	r.HandleFunc("/persons/{id}", deletePerson).Methods("DELETE")
 	log.Fatal(http.ListenAndServe(":8000", r))
 }
